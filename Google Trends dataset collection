@@ -1,0 +1,165 @@
+import pandas as pd
+pd.plotting.register_matplotlib_converters()
+import matplotlib.pyplot as plt
+%matplotlib inline
+import seaborn as sns
+import numpy as nump
+from datetime import datetime
+
+# Load the data for each country.
+canada_data = pd.read_excel("../input/mental-health-search-term/search_term_canada.xlsx", index_col="Week")
+canada_data_19 = pd.read_excel("../input/mental-health-search-term/search_term_canada_19.xlsx", index_col="Week")
+canada_data_18 = pd.read_excel("../input/mental-health-search-term/search_term_canada_18.xlsx", index_col="Week")
+canada_data_17 = pd.read_excel("../input/mental-health-search-term/search_term_canada_17.xlsx", index_col="Week")
+canada_data_16 = pd.read_excel("../input/mental-health-search-term/search_term_canada_16.xlsx", index_col="Week")
+iran_data = pd.read_excel("../input/mental-health-search-term/search_term_iran.xlsx", index_col="Week")
+italy_data = pd.read_excel("../input/mental-health-search-term/search_term_italy.xlsx", index_col="Week")
+japan_data = pd.read_excel("../input/mental-health-search-term/search_term_japan.xlsx", index_col="Week")
+sk_data = pd.read_excel("../input/mental-health-search-term/search_term_sk.xlsx", index_col="Week")
+uk_data = pd.read_excel("../input/mental-health-search-term/search_term_uk.xlsx", index_col="Week")
+us_data = pd.read_excel("../input/mental-health-search-term/search_term_us.xlsx", index_col="Week")
+worldwide_data = pd.read_excel("../input/mental-health-search-term/search_term_worldwide.xlsx", index_col="Week")
+
+# Plot the search interest worldwide.
+plt.figure(figsize=(20, 10))
+plt.plot(worldwide_data.index, worldwide_data['depression'], color='gray')
+plt.plot(worldwide_data.index, worldwide_data['ocd'], color='y')
+plt.plot(worldwide_data.index, worldwide_data['obsessive compulsive disorder'], color='orange')
+plt.axvline(x='2020-02', color='brown')
+
+plt.legend(['depression', 'ocd', 'obsessive compulsive disorder', 'outbreak'])
+plt.xlabel('Week')
+plt.ylabel('Search Interest')
+plt.title('Search Interest Worldwide - Part I');
+
+plt.figure(figsize=(20, 10))
+plt.plot(worldwide_data.index, worldwide_data['anxiety'], color='m')
+plt.plot(worldwide_data.index, worldwide_data['insomnia'], color='black')
+plt.plot(worldwide_data.index, worldwide_data['panic attack'], color='r')
+plt.axvline(x='2020-02', color='brown')
+
+plt.legend(['anxiety', 'insomnia', 'panic attack', 'outbreak'])
+plt.xlabel('Week')
+plt.ylabel('Search Interest')
+plt.title('Search Interest Worldwide - Part II');
+
+plt.figure(figsize=(20, 10))
+plt.plot(worldwide_data.index, worldwide_data['counseling'], color='pink')
+plt.plot(worldwide_data.index, worldwide_data['psychiatrist'], color='blue')
+plt.plot(worldwide_data.index, worldwide_data['mental health'], color='green')
+plt.axvline(x='2020-02', color='brown')
+
+plt.legend(['counseling', 'psychiatrist', 'mental health', 'outbreak'])
+plt.xlabel('Week')
+plt.ylabel('Search Interest')
+plt.title('Search Interest Worldwide - Part III');
+plt.figure(figsize=(20, 20))
+plt.title("Search Interest of Each Term by Week")
+sns.heatmap(data=worldwide_data, annot=True)
+plt.xlabel("Term");
+plt.ylabel("Date");
+terms = worldwide_data.columns.values
+
+maximum_peaks = nump.max(worldwide_data, axis=0)
+maximum_dates = [datetime.fromtimestamp(worldwide_data.index[worldwide_data[t] == maximum_peaks[t]][0].value / 1000000000) for t in terms]
+print("The maximum peak of each term:")
+for i in range(len(terms)):
+    print('{:^90}'.format(terms[i] +"  " + str(maximum_dates[i])))
+overall_average = nump.average(worldwide_data, axis=0)
+before_average = nump.average(worldwide_data.loc[worldwide_data.index < '2020-01-31'], axis=0)
+after_average = nump.average(worldwide_data.loc[worldwide_data.index >= '2020-01-31'], axis=0)
+av = nump.average(worldwide_data.loc[worldwide_data.index >= '2020-01-31'], axis=1)
+print("The average interest of each term over the 12 months:")
+for i in range(len(terms)):
+    print('{:^90}'.format(terms[i] + "    %.2f" % overall_average[i]))
+print()
+          
+print("The average interest of each term before Jan, 31, 2020:")
+for i in range(len(terms)):
+    print('{:^90}'.format(terms[i] + "    %.2f" % before_average[i]))
+print()
+
+print("The average interest of each term after Jan, 31, 2020:")
+for i in range(len(terms)):
+    print('{:^90}'.format(terms[i] + "    %.2f" % after_average[i]))  
+print()
+world_diff = after_average - before_average
+
+print("The average interest of each term after the outbreak changed by:")
+for i in range(len(terms)):
+    print('{:^90}'.format(terms[i] + "  " + "%.2f" % (100 * (after_average[i] - before_average[i]) / before_average[i]) + "%"))
+
+overall_var = nump.var(worldwide_data, axis=0)
+before_var = nump.var(worldwide_data.loc[worldwide_data.index < '2020-01-31'], axis=0)
+after_var = nump.var(worldwide_data.loc[worldwide_data.index >= '2020-01-31'], axis=0)
+print("The variance of each term over the 12 months:")
+for i in range(len(terms)):
+    print('{:^90}'.format(terms[i] + "    %.2f" % overall_var[i]))
+print()
+          
+print("The variance of each term before Jan, 31:")
+for i in range(len(terms)):
+    print('{:^90}'.format(terms[i] + "    %.2f" % before_var[i]))
+print()
+
+print("The variance of each term after Jan, 31:")
+for i in range(len(terms)):
+    print('{:^90}'.format(terms[i] + "    %.2f" % after_var[i]))
+# Plot the search interest in US.
+plt.figure(figsize=(20, 10))
+plt.plot(us_data.index, us_data['depression'], color='gray')
+plt.plot(us_data.index, us_data['ocd'], color='y')
+plt.plot(us_data.index, us_data['obsessive compulsive disorder'], color='orange')
+plt.axvline(x='2020-02', color='brown')
+
+plt.legend(['depression', 'ocd', 'obsessive compulsive disorder', 'outbreak'])
+plt.xlabel('Week')
+plt.ylabel('Search Interest')
+plt.title('Search Interest US - Part I');
+
+plt.figure(figsize=(20, 10))
+plt.plot(us_data.index, us_data['anxiety'], color='m')
+plt.plot(us_data.index, us_data['insomnia'], color='black')
+plt.plot(us_data.index, us_data['panic attack'], color='r')
+plt.axvline(x='2020-02', color='brown')
+
+plt.legend(['anxiety', 'insomnia', 'panic attack', 'outbreak'])
+plt.xlabel('Week')
+plt.ylabel('Search Interest')
+plt.title('Search Interest US - Part II');
+
+plt.figure(figsize=(20, 10))
+plt.plot(us_data.index, us_data['counseling'], color='pink')
+plt.plot(us_data.index, us_data['psychiatrist'], color='blue')
+plt.plot(us_data.index, us_data['mental health'], color='green')
+plt.axvline(x='2020-02', color='brown')
+
+plt.legend(['counseling', 'psychiatrist', 'mental health', 'outbreak'])
+plt.xlabel('Week')
+plt.ylabel('Search Interest')
+plt.title('Search Interest US - Part III');
+
+
+plt.figure(figsize=(20, 20))
+plt.title("Search Interest of Each Term by Week")
+sns.heatmap(data=us_data, annot=True)
+plt.xlabel("Term");
+plt.ylabel("Date");
+
+overall_average = nump.average(us_data, axis=0)
+before_average = nump.average(us_data.loc[us_data.index < '2020-01-31'], axis=0)
+after_average = nump.average(us_data.loc[us_data.index >= '2020-01-31'], axis=0)
+print("The average interest of each term over the 12 months:")
+for i in range(len(terms)):
+    print('{:^90}'.format(terms[i] + "    %.2f" % overall_average[i]))
+print()
+          
+print("The average interest of each term before Jan, 31, 2020:")
+for i in range(len(terms)):
+    print('{:^90}'.format(terms[i] + "    %.2f" % before_average[i]))
+print()
+
+print("The average interest of each term after Jan, 31, 2020:")
+for i in range(len(terms)):
+    print('{:^90}'.format(terms[i] + "    %.2f" % after_average[i]))  
+print()
